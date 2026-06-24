@@ -1,4 +1,5 @@
-import { initEngine, greenFlag, stopAll, toggleRunning, loadProject, saveProject, getVM } from './scratch-engine.js';
+import { initEngine, greenFlag, stopAll, saveProject } from './scratch-engine.js';
+import { hasApiKey, nlToBlocks } from './agnes-engine.js';
 
 // ── DOM refs ──
 const chatMessages = document.getElementById('chat-messages');
@@ -74,6 +75,8 @@ btnSave.addEventListener('click', async () => {
 });
 
 // ── 发送 AI 消息 ──
+let chatHistory = [];
+
 btnSend.addEventListener('click', sendMessage);
 chatInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter' && !e.shiftKey) {
@@ -86,6 +89,7 @@ async function sendMessage() {
   const text = chatInput.value.trim();
   if (!text) return;
 
+  chatHistory.push({ role: 'user', content: text });
   appendMessage('user', text);
   chatInput.value = '';
   btnSend.disabled = true;
@@ -93,10 +97,28 @@ async function sendMessage() {
   const loadingId = appendMessage('bot', '正在思考...⏳');
 
   try {
-    const response = await generateBlocks(text);
+    const keyAvailable = await hasApiKey();
+    if (!keyAvailable) {
+      updateMessage(loadingId, `⚠️ AGNES_API_KEY 未设置。
+
+请设置环境变量后再试：
+\`\`\`bash
+export AGNES_API_KEY=你的密钥
+\`\`\`
+
+不过目前你可以用以下命令先体验积木效果：
+1. 点击舞台上的 ▶ 按钮
+2. 看小猫在舞台上的默认动画`);
+      chatHistory.pop();
+      return;
+    }
+
+    const response = await nlToBlocks(text, chatHistory.slice(0, -1));
+    chatHistory.push({ role: 'assistant', content: response });
     updateMessage(loadingId, response);
   } catch (err) {
     updateMessage(loadingId, `出错了：${err.message}`);
+    chatHistory.pop();
   } finally {
     btnSend.disabled = false;
   }
@@ -121,17 +143,6 @@ function updateMessage(id, text) {
   if (el) {
     el.querySelector('.message-content').textContent = text;
   }
-}
-
-// ── AI 积木生成（暂用模拟） ──
-async function generateBlocks(prompt) {
-  return `好的！你想"${prompt}"，我推荐以下积木：
-
-  1. 🟢 事件 → 「当 ⚑ 被点击」
-  2. 🔵 运动 → 「移动 10 步」
-  3. 🟣 外观 → 「说 Hello! 2 秒」
-
-  AI 积木生成即将上线，敬请期待！`;
 }
 
 // ── 积木分类 ──
