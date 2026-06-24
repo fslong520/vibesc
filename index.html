@@ -22,41 +22,20 @@
           <span id="project-name" contenteditable="true">未命名项目</span>
         </div>
         <div class="menu-right">
+          <button id="btn-open" class="menu-btn">打开</button>
           <button id="btn-save" class="menu-btn">保存</button>
           <button id="btn-share" class="menu-btn menu-btn-primary">分享</button>
         </div>
+        <!-- 隐藏文件输入，用于 .sb3 导入 -->
+        <input type="file" id="file-input" accept=".sb3" style="display:none" />
       </div>
 
-      <!-- 主编辑区：三栏布局 -->
+      <!-- 主编辑区：双栏布局 -->
       <div id="editor-area">
-        <!-- 左侧：积木区 -->
-        <div id="block-palette">
-          <div class="panel-header">
-            <span>积木区</span>
-            <div class="block-search">
-              <input type="text" id="block-search-input" placeholder="搜索积木..." />
-            </div>
-          </div>
-          <div id="block-categories">
-            <!-- 动态填充积木分类 -->
-          </div>
-          <div id="block-list">
-            <!-- 积木列表由 TurboWarp 填充 -->
-          </div>
-        </div>
-
-        <!-- 中间：脚本编辑区 -->
+        <!-- 左侧：积木工作区（scratch-blocks 托管） -->
         <div id="script-area">
-          <div class="panel-header">
-            <span>代码区</span>
-            <div class="script-tabs" id="script-tabs">
-              <span class="script-tab active" data-target="code">代码</span>
-              <span class="script-tab" data-target="costumes">造型</span>
-              <span class="script-tab" data-target="sounds">声音</span>
-            </div>
-          </div>
           <div id="workspace">
-            <!-- TurboWarp 工作区 -->
+            <!-- scratch-blocks 注入于此 -->
           </div>
         </div>
 
@@ -115,8 +94,20 @@
           </div>
           <div class="panel-content" id="panel-material-workshop">
             <!-- 素材工坊 -->
-            <div class="workshop-empty">
-              <p>在 AI 对话中生成图片，或双击角色造型即可编辑</p>
+            <div class="workshop-toolbar">
+              <button class="ws-btn" data-tool="rotate-left" title="左旋 90°">↺</button>
+              <button class="ws-btn" data-tool="rotate-right" title="右旋 90°">↻</button>
+              <button class="ws-btn" data-tool="flip-h" title="水平翻转">⇔</button>
+              <button class="ws-btn" data-tool="flip-v" title="垂直翻转">⇕</button>
+              <span class="ws-sep"></span>
+              <button class="ws-btn" data-tool="apply-crop" title="裁剪">✂ 裁剪</button>
+              <button class="ws-btn" data-tool="cancel-crop" title="取消裁剪">✕ 取消</button>
+              <span class="ws-sep"></span>
+              <button class="ws-btn" data-tool="discard" title="放弃更改">↩ 重置</button>
+              <button class="ws-btn ws-btn-primary" data-tool="apply" title="应用到舞台">✓ 应用</button>
+            </div>
+            <div class="workshop-canvas-wrap">
+              <canvas id="ws-canvas" class="workshop-canvas"></canvas>
             </div>
           </div>
           <div class="panel-content" id="panel-hardware">

@@ -1,5 +1,8 @@
-import { initEngine, greenFlag, stopAll, saveProject } from './scratch-engine.js';
+import { initEngine, greenFlag, stopAll, loadProject, saveProject, getVM } from './scratch-engine.js';
 import { hasApiKey, nlToBlocks } from './agnes-engine.js';
+import { initBlockEditor, getWorkspace } from './block-editor.js';
+import { initMaterialWorkshop, refreshWorkshop, workshopTools } from './material-workshop.js';
+import { initPluginEngine } from './plugin-engine.js';
 
 // ── DOM refs ──
 const chatMessages = document.getElementById('chat-messages');
@@ -7,21 +10,67 @@ const chatInput = document.getElementById('chat-input');
 const btnSend = document.getElementById('btn-send');
 const btnStart = document.getElementById('btn-start');
 const btnStop = document.getElementById('btn-stop');
+const btnOpen = document.getElementById('btn-open');
 const btnSave = document.getElementById('btn-save');
+const fileInput = document.getElementById('file-input');
 const projectName = document.getElementById('project-name');
 const btnFoldPanel = document.getElementById('btn-fold-panel');
 const bottomPanel = document.getElementById('bottom-panel');
 
-// ── 初始化引擎 ──
+// ── 积木编辑器 SVG resize（布局变化时调用） ──
+function resizeWorkspace() {
+  const ws = getWorkspace();
+  if (ws) {
+    try { ws.resize(); } catch (_) {}
+  }
+}
+
+// ── 初始化引擎 + 积木编辑器 ──
 async function boot() {
   try {
     await initEngine('stage-canvas');
     console.log('[VibeSc] 引擎就绪');
+
+    // VM 就绪后初始化积木编辑器
+    initBlockEditor('workspace');
+    console.log('[VibeSc] 积木编辑器就绪');
+
+    // 素材工坊
+    initMaterialWorkshop('ws-canvas');
+    const vmInst = getVM();
+    if (vmInst) {
+      vmInst.on('TARGETS_UPDATE', () => {
+        setTimeout(refreshWorkshop, 100);
+      });
+    }
+
+    // 插件引擎
+    initPluginEngine();
+
+    // 布局变化时 resize 工作区
+    window.addEventListener('resize', resizeWorkspace);
   } catch (err) {
-    console.error('[VibeSc] 引擎启动失败:', err);
+    console.error('[VibeSc] 启动失败:', err);
   }
 }
 boot();
+
+// ── 素材工坊工具按钮绑定 ──
+document.querySelectorAll('[data-tool]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tool = btn.dataset.tool;
+    switch (tool) {
+      case 'rotate-left': workshopTools.rotateLeft(); break;
+      case 'rotate-right': workshopTools.rotateRight(); break;
+      case 'flip-h': workshopTools.flipH(); break;
+      case 'flip-v': workshopTools.flipV(); break;
+      case 'apply-crop': workshopTools.applyCrop(); break;
+      case 'cancel-crop': workshopTools.cancelCrop(); break;
+      case 'discard': workshopTools.discardChanges(); break;
+      case 'apply': workshopTools.applyChanges().catch(err => alert('应用失败: ' + err.message)); break;
+    }
+  });
+});
 
 // ── 底部面板标签切换 ──
 const bottomTabs = document.querySelectorAll('.bottom-tab');
@@ -45,18 +94,64 @@ btnFoldPanel.addEventListener('click', () => {
   btnFoldPanel.textContent = isCollapsed ? '▲' : '▼';
 });
 
-// ── 脚本标签切换 ──
-const scriptTabs = document.querySelectorAll('.script-tab');
-scriptTabs.forEach(tab => {
-  tab.addEventListener('click', () => {
-    scriptTabs.forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-  });
-});
-
 // ── 舞台控制 ──
 btnStart.addEventListener('click', greenFlag);
 btnStop.addEventListener('click', stopAll);
+
+// ── 打开 .sb3 文件 ──
+btnOpen.addEventListener('click', () => fileInput.click());
+
+fileInput.addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  await loadSb3File(file);
+  fileInput.value = '';
+});
+
+// ── 拖拽导入 .sb3 ──
+const stageArea = document.getElementById('stage-area');
+
+stageArea.addEventListener('dragenter', (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  stageArea.classList.add('drag-over');
+});
+
+stageArea.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+});
+
+stageArea.addEventListener('dragleave', (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  // 仅在离开 stage-area 时移除
+  if (!stageArea.contains(e.relatedTarget)) {
+    stageArea.classList.remove('drag-over');
+  }
+});
+
+stageArea.addEventListener('drop', async (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  stageArea.classList.remove('drag-over');
+  const files = e.dataTransfer.files;
+  if (files.length > 0) {
+    const sb3 = Array.from(files).find(f => f.name.endsWith('.sb3'));
+    if (sb3) await loadSb3File(sb3);
+  }
+});
+
+async function loadSb3File(file) {
+  try {
+    const arrayBuffer = await file.arrayBuffer();
+    await loadProject(arrayBuffer);
+    const name = file.name.replace(/\.sb3$/i, '');
+    projectName.textContent = name;
+  } catch (err) {
+    alert('导入失败: ' + err.message);
+  }
+}
 
 // ── 保存项目 ──
 btnSave.addEventListener('click', async () => {
@@ -144,25 +239,6 @@ function updateMessage(id, text) {
     el.querySelector('.message-content').textContent = text;
   }
 }
-
-// ── 积木分类 ──
-function initBlockCategories() {
-  const container = document.getElementById('block-categories');
-  if (!container) return;
-  const categories = ['运动', '外观', '声音', '事件', '控制', '侦测', '运算', '变量', '硬件'];
-  categories.forEach(cat => {
-    const span = document.createElement('span');
-    span.className = 'block-cat';
-    if (cat === '运动') span.classList.add('active');
-    span.textContent = cat;
-    container.appendChild(span);
-    span.addEventListener('click', () => {
-      container.querySelectorAll('.block-cat').forEach(c => c.classList.remove('active'));
-      span.classList.add('active');
-    });
-  });
-}
-initBlockCategories();
 
 // ── Tauri IPC ──
 if (window.__TAURI_INTERNALS__) {
