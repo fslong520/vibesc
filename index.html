@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VibeSc - 智搭</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <!-- 菜单栏 -->
+      <div id="menu-bar">
+        <div class="menu-left">
+          <div class="logo">智搭</div>
+          <div class="menu-items">
+            <span class="menu-item" data-menu="file">文件</span>
+            <span class="menu-item" data-menu="edit">编辑</span>
+            <span class="menu-item" data-menu="tutorials">教程</span>
+          </div>
+        </div>
+        <div class="menu-center">
+          <span id="project-name" contenteditable="true">未命名项目</span>
+        </div>
+        <div class="menu-right">
+          <button id="btn-save" class="menu-btn">保存</button>
+          <button id="btn-share" class="menu-btn menu-btn-primary">分享</button>
+        </div>
+      </div>
+
+      <!-- 主编辑区：三栏布局 -->
+      <div id="editor-area">
+        <!-- 左侧：积木区 -->
+        <div id="block-palette">
+          <div class="panel-header">
+            <span>积木区</span>
+            <div class="block-search">
+              <input type="text" id="block-search-input" placeholder="搜索积木..." />
+            </div>
+          </div>
+          <div id="block-categories">
+            <!-- 动态填充积木分类 -->
+          </div>
+          <div id="block-list">
+            <!-- 积木列表由 TurboWarp 填充 -->
+          </div>
+        </div>
+
+        <!-- 中间：脚本编辑区 -->
+        <div id="script-area">
+          <div class="panel-header">
+            <span>代码区</span>
+            <div class="script-tabs" id="script-tabs">
+              <span class="script-tab active" data-target="code">代码</span>
+              <span class="script-tab" data-target="costumes">造型</span>
+              <span class="script-tab" data-target="sounds">声音</span>
+            </div>
+          </div>
+          <div id="workspace">
+            <!-- TurboWarp 工作区 -->
+          </div>
+        </div>
+
+        <!-- 右侧：舞台 -->
+        <div id="stage-area">
+          <div class="panel-header">
+            <span>舞台</span>
+            <div class="stage-controls">
+              <button id="btn-start" title="开始">▶</button>
+              <button id="btn-stop" title="停止">■</button>
+            </div>
+          </div>
+          <div id="stage-canvas">
+            <!-- TurboWarp 渲染器 -->
+          </div>
+          <div id="sprite-list">
+            <!-- 角色列表 -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 底部面板 -->
+      <div id="bottom-panel">
+        <div class="bottom-panel-header">
+          <div class="bottom-tabs" id="bottom-tabs">
+            <span class="bottom-tab active" data-panel="ai-chat">
+              💬 AI 对话
+            </span>
+            <span class="bottom-tab" data-panel="material-workshop">
+              🎨 素材工坊
+            </span>
+            <span class="bottom-tab" data-panel="hardware">
+              🔧 硬件
+            </span>
+            <span class="bottom-tab" data-panel="plugins">
+              🧩 插件
+            </span>
+          </div>
+          <div class="bottom-panel-actions">
+            <button id="btn-fold-panel" title="折叠">▼</button>
+          </div>
+        </div>
+        <div class="bottom-panel-body">
+          <div class="panel-content active" id="panel-ai-chat">
+            <!-- AI 对话 -->
+            <div class="chat-messages" id="chat-messages">
+              <div class="chat-message bot">
+                <div class="message-avatar">🤖</div>
+                <div class="message-content">你好！我是智搭助手。告诉我你想做什么游戏或动画，我来帮你生成积木！</div>
+              </div>
+            </div>
+            <div class="chat-input-area">
+              <textarea id="chat-input" placeholder="说你想做什么，比如：让小猫走10步然后喵一声" rows="2"></textarea>
+              <button id="btn-send" class="btn-send">发送</button>
+            </div>
+          </div>
+          <div class="panel-content" id="panel-material-workshop">
+            <!-- 素材工坊 -->
+            <div class="workshop-empty">
+              <p>在 AI 对话中生成图片，或双击角色造型即可编辑</p>
+            </div>
+          </div>
+          <div class="panel-content" id="panel-hardware">
+            <!-- 硬件 -->
+            <div class="hardware-toolbar">
+              <select id="hardware-port-select">
+                <option value="">选择串口...</option>
+              </select>
+              <button id="btn-connect-hardware" class="menu-btn">连接</button>
+              <button id="btn-scan-ports" class="menu-btn menu-btn-secondary">扫描</button>
+            </div>
+            <div class="hardware-status" id="hardware-status">
+              未连接
+            </div>
+          </div>
+          <div class="panel-content" id="panel-plugins">
+            <!-- 插件 -->
+            <div class="plugins-toolbar">
+              <button id="btn-load-plugin" class="menu-btn">加载插件</button>
+              <button id="btn-open-plugin-folder" class="menu-btn menu-btn-secondary">打开插件目录</button>
+            </div>
+            <div class="plugin-list" id="plugin-list">
+              <p class="text-muted">暂无插件。点击"加载插件"选择 .zhplugin 文件安装</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

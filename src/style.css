@@ -1,0 +1,105 @@
+/* === Reset & Base === */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; font-size: 13px; color: #333; background: #f5f5f5; }
+
+/* === App Layout === */
+#app { display: flex; flex-direction: column; height: 100vh; }
+
+/* === Menu Bar === */
+#menu-bar { display: flex; align-items: center; height: 44px; padding: 0 12px; background: #fff; border-bottom: 1px solid #ddd; flex-shrink: 0; }
+.menu-left { display: flex; align-items: center; gap: 20px; }
+.logo { font-size: 16px; font-weight: 700; color: #4caf50; cursor: default; }
+.menu-items { display: flex; gap: 4px; }
+.menu-item { padding: 4px 10px; border-radius: 4px; cursor: pointer; color: #555; font-size: 13px; }
+.menu-item:hover { background: #eee; }
+.menu-center { flex: 1; text-align: center; }
+#project-name { display: inline-block; padding: 4px 10px; border-radius: 4px; font-size: 14px; font-weight: 500; cursor: text; min-width: 100px; }
+#project-name:hover { background: #eee; }
+.menu-right { display: flex; gap: 8px; }
+.menu-btn { padding: 6px 14px; border: 1px solid #ccc; border-radius: 6px; background: #fff; cursor: pointer; font-size: 13px; }
+.menu-btn:hover { background: #f0f0f0; }
+.menu-btn-primary { background: #4caf50; color: #fff; border-color: #4caf50; }
+.menu-btn-primary:hover { background: #43a047; }
+.menu-btn-secondary { background: #f5f5f5; color: #555; border-color: #ddd; }
+
+/* === Editor Area (三栏) === */
+#editor-area { display: flex; flex: 1; min-height: 0; }
+
+/* 积木区 */
+#block-palette { width: 260px; min-width: 200px; background: #fff; border-right: 1px solid #ddd; display: flex; flex-direction: column; }
+.panel-header { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; border-bottom: 1px solid #eee; font-weight: 600; font-size: 13px; flex-shrink: 0; }
+.block-search { margin-left: 8px; }
+#block-search-input { width: 100px; padding: 3px 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; }
+#block-categories { display: flex; flex-wrap: wrap; gap: 2px; padding: 6px; border-bottom: 1px solid #eee; flex-shrink: 0; }
+.block-cat { padding: 4px 10px; border-radius: 12px; cursor: pointer; font-size: 11px; color: #555; }
+.block-cat:hover { background: #e8f5e9; }
+.block-cat.active { background: #4caf50; color: #fff; }
+#block-list { flex: 1; overflow-y: auto; padding: 8px; }
+
+/* 脚本编辑区 */
+#script-area { flex: 1; display: flex; flex-direction: column; background: #fafafa; min-width: 0; }
+.script-tabs { display: flex; gap: 0; margin-left: 16px; }
+.script-tab { padding: 4px 14px; cursor: pointer; font-weight: 400; color: #888; border-bottom: 2px solid transparent; font-size: 13px; }
+.script-tab:hover { color: #333; }
+.script-tab.active { color: #4caf50; border-bottom-color: #4caf50; font-weight: 500; }
+#workspace { flex: 1; position: relative; overflow: hidden; background: #f0f0f0; }
+
+/* 舞台区 */
+#stage-area { width: 280px; min-width: 240px; background: #fff; border-left: 1px solid #ddd; display: flex; flex-direction: column; }
+.stage-controls { display: flex; gap: 4px; }
+.stage-controls button { width: 28px; height: 28px; border: 1px solid #ddd; border-radius: 50%; background: #fff; cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center; }
+.stage-controls button:hover { background: #f0f0f0; }
+#stage-canvas { flex: 1; min-height: 200px; background: #e8e8e8; display: flex; align-items: center; justify-content: center; position: relative; }
+#stage-canvas canvas { display: block; }
+#sprite-list { height: 140px; border-top: 1px solid #ddd; padding: 8px; overflow-y: auto; display: flex; flex-wrap: wrap; gap: 8px; align-content: flex-start; }
+.sprite-item { width: 60px; height: 60px; border: 2px solid #ddd; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; background: #fafafa; font-size: 24px; }
+.sprite-item:hover { border-color: #4caf50; }
+.sprite-item.active { border-color: #4caf50; background: #e8f5e9; }
+
+/* === Bottom Panel === */
+#bottom-panel { height: 280px; min-height: 40px; border-top: 1px solid #ddd; background: #fff; display: flex; flex-direction: column; flex-shrink: 0; transition: height 0.2s; }
+#bottom-panel.collapsed { height: 40px !important; }
+#bottom-panel.collapsed .bottom-panel-body { display: none; }
+
+.bottom-panel-header { display: flex; align-items: center; justify-content: space-between; height: 40px; padding: 0 12px; background: #fafafa; border-bottom: 1px solid #eee; flex-shrink: 0; }
+.bottom-tabs { display: flex; gap: 0; }
+.bottom-tab { padding: 8px 16px; cursor: pointer; font-size: 13px; color: #666; border-bottom: 2px solid transparent; }
+.bottom-tab:hover { color: #333; background: #f0f0f0; }
+.bottom-tab.active { color: #4caf50; border-bottom-color: #4caf50; font-weight: 500; background: #fff; }
+.bottom-tab.has-unsaved::after { content: " ⏺️"; font-size: 10px; }
+
+.bottom-panel-actions button { background: none; border: none; cursor: pointer; font-size: 12px; color: #888; padding: 4px 8px; }
+.bottom-panel-actions button:hover { color: #333; }
+
+.bottom-panel-body { flex: 1; min-height: 0; overflow: hidden; }
+.panel-content { display: none; height: 100%; flex-direction: column; }
+.panel-content.active { display: flex; }
+
+/* === AI Chat === */
+.chat-messages { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 12px; }
+.chat-message { display: flex; gap: 10px; max-width: 85%; }
+.chat-message.user { align-self: flex-end; flex-direction: row-reverse; }
+.chat-message.bot { align-self: flex-start; }
+.message-avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.message-content { padding: 10px 14px; border-radius: 12px; font-size: 13px; line-height: 1.6; background: #f0f0f0; }
+.chat-message.user .message-content { background: #e8f5e9; }
+.chat-message.bot .message-content { background: #f5f5f5; border: 1px solid #eee; }
+.chat-input-area { display: flex; gap: 8px; padding: 10px 12px; border-top: 1px solid #eee; align-items: flex-end; }
+#chat-input { flex: 1; padding: 8px 12px; border: 1px solid #ddd; border-radius: 8px; resize: none; font-size: 13px; font-family: inherit; line-height: 1.5; }
+#chat-input:focus { outline: none; border-color: #4caf50; }
+.btn-send { padding: 8px 20px; background: #4caf50; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; }
+.btn-send:hover { background: #43a047; }
+.btn-send:disabled { background: #ccc; cursor: default; }
+
+/* === Material Workshop === */
+.workshop-empty { display: flex; align-items: center; justify-content: center; height: 100%; color: #999; font-size: 14px; }
+
+/* === Hardware === */
+.hardware-toolbar { display: flex; gap: 8px; padding: 10px 12px; border-bottom: 1px solid #eee; align-items: center; }
+#hardware-port-select { padding: 6px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; min-width: 180px; }
+.hardware-status { padding: 12px; color: #888; }
+
+/* === Plugins === */
+.plugins-toolbar { display: flex; gap: 8px; padding: 10px 12px; border-bottom: 1px solid #eee; }
+.plugin-list { padding: 12px; color: #888; }
+.text-muted { color: #aaa; }
