@@ -50,7 +50,7 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, BlinkMa
 .stage-controls button { width: 28px; height: 28px; border: 1px solid #ddd; border-radius: 50%; background: #fff; cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center; }
 .stage-controls button:hover { background: #f0f0f0; }
 #stage-canvas { flex: 1; min-height: 200px; background: #e8e8e8; display: flex; align-items: center; justify-content: center; position: relative; }
-#stage-canvas canvas { display: block; }
+#stage-canvas { width: 480px; height: 360px; display: block; margin: auto; border-radius: 4px; cursor: default; }
 #sprite-list { height: 140px; border-top: 1px solid #ddd; padding: 8px; overflow-y: auto; display: flex; flex-wrap: wrap; gap: 8px; align-content: flex-start; }
 .sprite-item { width: 60px; height: 60px; border: 2px solid #ddd; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; background: #fafafa; font-size: 24px; }
 .sprite-item:hover { border-color: #4caf50; }
