@@ -14,8 +14,12 @@
     "vite": "^6"
   },
   "dependencies": {
+    "@turbowarp/scratch-storage": "^2.0.0",
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0",
     "scratch-audio": "^2.0.268",
     "scratch-blocks": "^2.1.19",
+    "scratch-gui": "^5.2.16",
     "scratch-render": "^2.2.84",
     "scratch-storage": "^6.2.1",
     "scratch-svg-renderer": "^3.1.19",

@@ -1,0 +1,26 @@
+{
+  "version": "1.0",
+  "skills": [
+    {
+      "id": "block-writer",
+      "name": "写积木",
+      "description": "为角色生成 Scratch 积木脚本",
+      "trigger_keywords": ["走", "说", "移动", "重复", "如果", "让", "当", "点击", "等待", "转向"],
+      "prompt_file": "prompts/block-writer.md"
+    },
+    {
+      "id": "image-gen",
+      "name": "生成图片",
+      "description": "为角色生成造型、背景图片",
+      "trigger_keywords": ["画", "生成图片", "造型", "背景", "图片", "素材", "插图"],
+      "prompt_file": "prompts/image-gen.md"
+    },
+    {
+      "id": "code-checker",
+      "name": "查代码",
+      "description": "检查当前积木脚本的逻辑问题",
+      "trigger_keywords": ["检查", "问题", "错误", "为什么", "看看", "分析"],
+      "prompt_file": "prompts/code-checker.md"
+    }
+  ]
+}

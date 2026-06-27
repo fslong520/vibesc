@@ -16,6 +16,7 @@
             <span class="menu-item" data-menu="file">文件</span>
             <span class="menu-item" data-menu="edit">编辑</span>
             <span class="menu-item" data-menu="tutorials">教程</span>
+            <span class="menu-item" data-menu="settings">设置</span>
           </div>
         </div>
         <div class="menu-center">
@@ -30,31 +31,9 @@
         <input type="file" id="file-input" accept=".sb3" style="display:none" />
       </div>
 
-      <!-- 主编辑区：双栏布局 -->
+      <!-- 主编辑区：scratch-gui 托管 -->
       <div id="editor-area">
-        <!-- 左侧：积木工作区（scratch-blocks 托管） -->
-        <div id="script-area">
-          <div id="workspace">
-            <!-- scratch-blocks 注入于此 -->
-          </div>
-        </div>
-
-        <!-- 右侧：舞台 -->
-        <div id="stage-area">
-          <div class="panel-header">
-            <span>舞台</span>
-            <div class="stage-controls">
-              <button id="btn-start" title="开始">▶</button>
-              <button id="btn-stop" title="停止">■</button>
-            </div>
-          </div>
-          <canvas id="stage-canvas" width="480" height="360">
-            你的浏览器不支持 WebGL
-          </canvas>
-          <div id="sprite-list">
-            <!-- 角色列表 -->
-          </div>
-        </div>
+        <div id="scratch-gui-mount"></div>
       </div>
 
       <!-- 底部面板 -->
@@ -84,11 +63,12 @@
             <div class="chat-messages" id="chat-messages">
               <div class="chat-message bot">
                 <div class="message-avatar">🤖</div>
-                <div class="message-content">你好！我是智搭助手。告诉我你想做什么游戏或动画，我来帮你生成积木！</div>
+                <div class="message-content">你好！我是智搭助手。我可以帮你写积木、生成图片、检查代码。试试看！</div>
               </div>
             </div>
             <div class="chat-input-area">
-              <textarea id="chat-input" placeholder="说你想做什么，比如：让小猫走10步然后喵一声" rows="2"></textarea>
+              <div id="skill-switcher"></div>
+              <textarea id="chat-input" placeholder="说你想做什么…" rows="2"></textarea>
               <button id="btn-send" class="btn-send">发送</button>
             </div>
           </div>
@@ -136,6 +116,64 @@
         </div>
       </div>
     </div>
+    <!-- fetch-worker monkey-patch: 必须在任何 import scratch-gui 的模块之前执行 -->
+    <script>
+    (function patchWorker() {
+      var OrigWorker = window.Worker;
+      if (!OrigWorker) return;
+      window.Worker = function Worker(url, options) {
+        var urlStr = typeof url === 'string' ? url : (url instanceof URL ? url.href : '');
+        if (urlStr.indexOf('fetch-worker') !== -1) {
+          throw new Error('[VibeSc] fetch-worker chunk unavailable');
+        }
+        return new OrigWorker(url, options);
+      };
+      window.Worker.prototype = OrigWorker.prototype;
+    })();
+
+    // AudioContext 单例 + console.warn 压制
+    (function() {
+      var _sharedAC = null;
+      var _OrigAC = window.AudioContext;
+      var _OrigWAC = window.webkitAudioContext;
+      function _getAC() {
+        if (!_sharedAC) { try { _sharedAC = new (_OrigAC || _OrigWAC)(); } catch (_) {} }
+        return _sharedAC;
+      }
+      if (_OrigAC) {
+        function _PAC() { return _getAC(); }
+        _PAC.prototype = _OrigAC.prototype;
+        try { Object.defineProperty(_PAC, 'prototype', { value: _OrigAC.prototype }); } catch (_) {}
+        window.AudioContext = _PAC;
+      }
+      if (_OrigWAC) {
+        function _PWAC() { return _getAC(); }
+        _PWAC.prototype = _OrigWAC.prototype;
+        try { Object.defineProperty(_PWAC, 'prototype', { value: _OrigWAC.prototype }); } catch (_) {}
+        window.webkitAudioContext = _PWAC;
+      }
+      // 首次交互时 resume
+      function _onInteraction() {
+        if (_sharedAC && _sharedAC.state === 'suspended') _sharedAC.resume().catch(function(){});
+        document.removeEventListener('pointerdown', _onInteraction, true);
+        document.removeEventListener('keydown', _onInteraction, true);
+      }
+      document.addEventListener('pointerdown', _onInteraction, true);
+      document.addEventListener('keydown', _onInteraction, true);
+      // console.warn 过滤所有含 AudioContext 的消息
+      var _w = window.console.warn.bind(window.console);
+      window.console.warn = function() {
+        for (var i = 0; i < arguments.length; i++) {
+          var a = arguments[i];
+          if (typeof a === 'string') {
+            if (a.indexOf('AudioContext') >= 0) return;
+            if (a.indexOf('Canvas2D') >= 0) return;
+          }
+        }
+        _w.apply(window.console, arguments);
+      };
+    })();
+    </script>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>

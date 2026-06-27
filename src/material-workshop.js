@@ -5,7 +5,7 @@
  * 编辑完成后将结果写回 VM。
  */
 
-import { getVM } from './scratch-engine.js';
+import { getVM } from './gui-bootstrap.jsx';
 
 let vm = null;
 let wsCanvas = null;

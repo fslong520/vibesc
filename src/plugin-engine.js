@@ -4,6 +4,8 @@
  * 扫描插件目录 → 解析 .zhplugin 清单 → Worker 沙箱加载。
  */
 
+import { getVM } from './gui-bootstrap.jsx';
+
 // ── 插件数据结构 ──
 let plugins = [];
 let loadedPlugins = new Map(); // pluginId → { worker, api }
@@ -128,7 +130,6 @@ export async function loadPlugin(pluginId) {
       vm: () => {
         // 小心循环引用——只暴露必要的
         try {
-          const { getVM } = require('./scratch-engine.js');
           return getVM();
         } catch (_) {
           return null;
